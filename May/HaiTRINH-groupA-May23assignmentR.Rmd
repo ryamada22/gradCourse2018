@@ -1,0 +1,88 @@
+---
+title: "HaiTRINH-groupA-May23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Excercise from Get Started p.10
+library(downloader)
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
+filename <- "femaleMiceWeights.csv"
+download(url, destfile=filename)
+dat<-read.csv(filename)     ##1 read in the file
+head(dat) 
+dat["Bodyweight"]           ##1 body weight in exact name of column containing weights
+dat[12,2]                   ##2 entry of 12th row and 2nd column
+dat$Bodyweight              ##3 extract weight column
+dat[11,"Bodyweight"]        ##3weight of the mouse in the 11th row
+length(dat[[1]])            ##4 number of mice in dataset
+dat$Diet=="hf"              ##5 row associated with hf diet  
+hf_diet<-dat[ dat$Diet=="hf", "Bodyweight"]
+print(hf_diet)
+mean(hf_diet)               ##5average weight of hf diet
+library(base)
+set.seed(1)
+rd_sample<-dat[sample(13:24, 1),]##6 random sample of size 1 from numbers 13 to 24
+rd_sample$Bodyweight             ##6 weight of the mouse reported by that row
+##end
+##================================
+
+##Excerise from Inference, p30,31
+library(downloader)
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
+filename <- basename(url)
+download(url, destfile=filename)
+x <- unlist( read.csv(filename) )
+#Q1 average of weights of entire population
+mean(x) 
+#startQ2 random sample of 5, abs difference btw average of sample & population
+set.seed(1) 
+y<-sample(x,5)       
+print(y)
+abs(mean(y)-mean(x)) 
+#startQ3 random sample of 5, abs difference btw average of sample & population
+set.seed(5)
+y<-sample(x,5)      
+abs(mean(y)-mean(x))
+#Q4 answers from 2 and 3 are different because (C) the average of the samples is a random variable
+#start Q5 1000random samples of 5 mices and the averages of these samples
+set.seed(1)
+n <- 1000
+null <- vector("numeric",n)
+for (i in 1:n) {       
+  y <- sample(x,5)
+  null[i] <- mean(y)}
+hist(null,main = "Histogram of null_5_1000" )
+mean(abs(null-mean(x))>=1)   
+#start Q6 10000random samples of 5 mices and the averages of these samples
+set.seed(1) 
+n<-10000
+null <- vector("numeric",n)
+for (i in 1:n) {      
+  y <- sample(x,5)
+  null[i] <- mean(y)}
+hist(null,main = "Histogram of null_5_10000")
+mean(abs(null-mean(x))>=1)    
+#start Q7 1000random samples of 50 mices and the averages of these samples
+set.seed(1)  
+n<-1000
+null <- vector("numeric",n)
+for (i in 1:n) {     
+  y <- sample(x,50)
+  null[i] <- mean(y)}
+hist(null,main = "Histogram of null_50_1000")
+mean(abs(null-mean(x))>=1) 
+#8 C They both look roughly normal, but with a sample size of 50 the speader is larger
+#9 percent btw 23 & 25 of averages; result:0.976
+mean(null>=23 & null<=25)
+#10 percent btw 23 & 25 of a normal distribution wt mean=23.9 & sd=0.43;result:0.9765648
+pnorm(25,mean=23.9,sd=0.43)-pnorm(23,mean=23.9,sd=0.43) 
+##end
+
+##==============
+##I have problem with 'stringi' package but I have not found the solution yet that I can not integrate execution of the codes into this file.
+
+
