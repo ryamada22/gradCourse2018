@@ -1,0 +1,196 @@
+---
+title: "assignment 23 May"
+author: "Yamamoto Ryosuke"
+date: "2018/5/26"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(downloader)
+    library(dplyr)
+```
+
+## Assignment 23 May for Genome omics class
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+1. Read in the file femaleMiceWeights.csv and report the body weight of the mouse in the
+exact name of the column containing the weights.
+```{r}
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extd\
+ata/femaleMiceWeights.csv"
+filename <- "femaleMiceWeights.csv"
+download(url, destfile=filename)
+read.csv("femaleMiceWeights.csv")
+dat <- read.csv(filename)
+```
+
+2. The [ and ] symbols can be used to extract specific rows and specific columns of the table.What is the entry in the 12th row and second column?
+```{r}
+dat[12,2]
+```
+
+3. You should have learned how to use the $ character to extract a column from a table and
+return it as a vector. Use $ to extract the weight column and report the weight of the mouse
+in the 11th row.
+```{r}
+dat$Bodyweight[11]
+```
+
+4. The length function returns the number of elements in a vector. How many mice are
+included in our dataset?
+```{r}
+length(dat$Bodyweight)
+```
+
+5. To create a vector with the numbers 3 to 7, we can use seq(3,7) or, because they are
+consecutive, 3:7. View the data and determine what rows are associated with the high fat
+or hf diet. Then use the mean function to compute the average weight of these mice.
+```{r}
+mean(dat$Bodyweight)
+```
+
+6. One of the functions we will be using often is sample. Read the help file for sample using ?sample. Now take a random sample of size 1 from the numbers 13 to 24 and report back the weight of the mouse represented by that row. Make sure to type set.seed(1) to ensurethat everybody gets the same answer.
+```{r}
+set.seed(1)
+x<-sample(13:24,1)
+dat$Bodyweight[x]
+```
+
+
+##Exercises
+For these exercises, we will be using the following dataset:
+
+```{r}
+library(downloader)
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
+filename <- basename(url)
+download(url, destfile=filename)
+x <- unlist( read.csv(filename) )
+```
+Here x represents the weights for the entire population.
+
+1. What is the average of these weights?
+```{r}
+mean(x)
+xm<-mean(x)
+```
+2. After setting the seed at 1, set.seed(1) take a random sample of size 5. What is the absolute value (use abs) of the difference between the average of the sample and the average of all the values?
+```{r}
+set.seed(1)
+y<-sample(x,5)
+mean(y)
+ym<-mean(y)
+z<-abs(xm-ym)
+```
+3. After setting the seed at 5, set.seed(5) take a random sample of size 5. What is the absolute value of the difference between the average of the sample and the average of all the values?
+```{r}
+set.seed(5)
+y2<-sample(x,5)
+mean(y2)
+y2m<-mean(y2)
+z2<-abs(xm-y2m)
+```
+4. Why are the answers from 2 and 3 different?
+??? A) Because we made a coding mistake.
+??? B) Because the average of the x is random.
+??? C) Because the average of the samples is a random variable.
+??? D) All of the above.
+
+Answer is "C"
+
+5. Set the seed at 1, then using a for-loop take a random sample of 5 mice 1,000 times. Save these averages. What percent of these 1,000 averages are more than 1 ounce away from the average of x ?
+```{r}
+set.seed(1)
+n<-1000
+null<- vector("numeric",n)
+for (i in 1:n) {
+yi <- sample(x,5)
+yim <- mean(yi)
+null[i] <- abs(xm-yim)
+}
+library(dplyr)
+sum(null>1)
+mean(null>1)
+table(null>1)
+```
+
+6. We are now going to increase the number of times we redo the sample from 1,000 to 10,000. Set the seed at 1, then using a for-loop take a random sample of 5 mice 10,000 times. Save these averages. What percent of these 10,000 averages are more than 1 ounce away from the average of x ?
+```{r}
+set.seed(1)
+n<-10000
+null<- vector("numeric",n)
+for (i in 1:n) {
+yi <- sample(x,5)
+yim <- mean(yi)
+null[i] <- abs(xm-yim)
+}
+library(dplyr)
+table(null>1)
+```
+7. Note that the answers to 4 and 5 barely changed. This is expected. The way we think about the random value distributions is as the distribution of the list of values obtained if we repeated the experiment an infinite number of times. On a computer, we can???t perform an infinite number of iterations so instead, for our examples, we consider 1,000 to be large enough, thus 10,000 is as well. Now if instead we change the sample size, then we change
+the random variable and thus its distribution. Set the seed at 1, then using a for-loop take a random sample of 50 mice 1,000 times. Save these averages. What percent of these 1,000 averages are more than 1 ounce away from the
+average of x ?
+```{r}
+set.seed(1)
+n<-1000
+null<- vector("numeric",n)
+for (i in 1:n) {
+yi <- sample(x,50)
+yim <- mean(yi)
+null[i] <- abs(xm-yim)
+}
+table(null>1)
+```
+
+8. Use a histogram to ???look??? at the distribution of averages we get with a sample size of 5 and a sample size of 50. How would you say they differ?
+```{r}
+par(mfrow=c(1,2))
+set.seed(1)
+n<-1000
+null<- vector("numeric",n)
+for (i in 1:n) {
+yi <- sample(x,50)
+yim <- mean(yi)
+null[i] <- abs(xm-yim)
+}
+hist(null,main="histgram for 5 samples")
+null<- vector("numeric",n)
+for (i in 1:n) {
+yi <- sample(x,50)
+yim <- mean(yi)
+null[i] <- abs(xm-yim)
+}
+hist(null,main="histgram for 50 samples")
+```
+
+A) They are actually the same.
+B) They both look roughly normal, but with a sample size of 50 the spread is smaller.
+C) They both look roughly normal, but with a sample size of 50 the spread is larger.
+D) The second distribution does not look normal at all.
+
+Answer is "D".
+
+9. For the last set of averages, the ones obtained from a sample size of 50, what percent are between 23 and 25?
+```{r}
+set.seed(1)
+n<-1000
+null<- vector("numeric",n)
+for (i in 1:n) {
+yi <- sample(x,50)
+yim <- mean(yi)
+null[i] <- yim
+}
+mean(null>=23 & null<=25)
+
+```
+
+10. Now ask the same question of a normal distribution with average 23.9 and standard deviation 0.43. 
+```{r}
+yn <- rnorm(1000,23.9,0.43)
+mean(yn>=23 & yn<=25)
+```
+The answer to 9 and 10 were very similar. This is because we can approximate the distribution of the sample average with a normal distribution. We will learn more about the reason for this next.
